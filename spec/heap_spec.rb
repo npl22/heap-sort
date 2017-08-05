@@ -9,13 +9,13 @@ describe BinaryMinHeap do
     end
 
     it "calculates parent indices correctly" do
-      expect(BinaryMinHeap.parent_index(5)).to eq(2)
-      expect(BinaryMinHeap.parent_index(4)).to eq(1)
-      expect(BinaryMinHeap.parent_index(3)).to eq(1)
-      expect(BinaryMinHeap.parent_index(2)).to eq(0)
-      expect(BinaryMinHeap.parent_index(1)).to eq(0)
+      expect(BinaryMinHeap.parent_idx(5)).to eq(2)
+      expect(BinaryMinHeap.parent_idx(4)).to eq(1)
+      expect(BinaryMinHeap.parent_idx(3)).to eq(1)
+      expect(BinaryMinHeap.parent_idx(2)).to eq(0)
+      expect(BinaryMinHeap.parent_idx(1)).to eq(0)
       expect do
-        BinaryMinHeap.parent_index(0)
+        BinaryMinHeap.parent_idx(0)
       end.to raise_error("root has no parent")
     end
   end

@@ -6,7 +6,7 @@ class BinaryMinHeap
   end
 
   def count
-    @store.length
+    @store.count
   end
 
   def extract
@@ -20,8 +20,9 @@ class BinaryMinHeap
   end
 
   public
+
   def self.child_indices(len, parent_idx)
-    [2 * parent_idx + 1, 2 * parent_idx + 2].select { |i| i < len }
+    [2 * parent_idx + 1, 2 * parent_idx + 2].select { |idx| idx < len }
   end
 
   def self.parent_idx(child_idx)
@@ -29,36 +30,48 @@ class BinaryMinHeap
     (child_idx - 1) / 2
   end
 
-  # 1) until the array is heapified, swap parent and child index
-  # 2) if parent is greater than its children, swap them
-  # 3) continue swapping until parent is not larger than children
   def self.heapify_down(arr, parent_idx, len = arr.length, &prc)
-    heapified = false
-    new_parent_idx = nil
-
-    until heapified
-      if child_indicies(len, parent_idx).all? { |i| i < arr[parent_idx] }
-        heapified = true
-      else
-
-      end
-
-      child_indices(len, parent_idx).each do |child_idx|
-        if arr[parent_idx] > arr[child_idx]
-          arr[parent_idx], arr[child_idx] = arr[child_idx], arr[parent_idx]
-          new_parent_idx = child_idx
-          break
-        end
-      end
-      parent_idx = new_parent_idx
-    end
-
-
 
   end
 
   def self.heapify_up(arr, child_idx, len = arr.length, &prc)
+    return arr if child_idx.zero?
+    prc ||= proc { |el1, el2| el1 <=> el2 } # Prc for min/max heap
+    child = arr[child_idx]
+    parent = arr[parent_idx(child_idx)]
 
+    # return arr if heap property is satisfied
+    return arr if prc.call(child, parent) >= 0
 
+    # swap child and parent
+    arr[parent_idx(child_idx)] = child
+    arr[child_idx] = parent
+    # do another level of swaps
+    heapify_up(arr, parent_idx(child_idx), len, &prc)
+
+    arr
   end
 end
+
+# iterative solution
+# def self.heapify_up(arr, child_idx, len = arr.length, &prc)
+#   # pass the arr/heap, and the idx of the element you want to heapify up
+#   # compare the child and parent, swap if out of order
+#   prc ||= Proc.new { |el1, el2| el1 <=> el2 } # Prc for min/max heap
+#   loop do
+#     child, parent = arr[child_idx], arr[self.parent_idx(child_idx)]
+#
+#     if prc.call(child, parent) == -1
+#       arr[self.parent_idx(child_idx)] = child
+#       arr[child_idx] = parent
+#     elsif prc.call(child, parent) == 1
+#       break
+#     end
+#
+#     # Reassign child_idx (go up one level in the heap)
+#     child_idx = self.parent_idx(child_idx)
+#     break if child_idx.zero?
+#   end
+#
+#   arr
+# end
