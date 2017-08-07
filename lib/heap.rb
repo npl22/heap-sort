@@ -1,8 +1,11 @@
+require 'pry-byebug'
+
 class BinaryMinHeap
   attr_reader :store, :prc
 
   def initialize(&prc)
     @store = []
+    @prc ||= proc { |el1, el2| el1 <=> el2 }
   end
 
   def count
@@ -10,6 +13,21 @@ class BinaryMinHeap
   end
 
   def extract
+    raise 'Heap is empty' if count.zero?
+    # return the root value of the heap
+    val = store[0]
+
+    # remove the 1st element and make sure the heap property is preserved
+    # replace the first el with the last el, then call heapify down
+    # the result will always be a tree that satisfies the heap properties
+    if count > 1
+      store[0] = @store.pop
+      BinaryMinHeap.heapify_down(store, 0, &prc)
+    else
+      @store.pop
+    end
+
+    val
   end
 
   def peek
@@ -17,6 +35,8 @@ class BinaryMinHeap
   end
 
   def push(val)
+    @store << val
+    BinaryMinHeap.heapify_up(store, count - 1, &prc)
   end
 
   public
@@ -31,7 +51,27 @@ class BinaryMinHeap
   end
 
   def self.heapify_down(arr, parent_idx, len = arr.length, &prc)
+    prc ||= proc { |el1, el2| el1 <=> el2 }
+    parent = arr[parent_idx]
 
+    l_child_idx, r_child_idx = child_indices(len, parent_idx)
+    children = []
+    children << arr[l_child_idx] if l_child_idx
+    children << arr[r_child_idx] if r_child_idx
+    # return array if heap property is satisfied for both children
+    return arr if children.all? { |child| prc.call(child, parent) >= 0 }
+
+    # swap parent with largest/smallest of its children
+    if children.length == 1
+      swap_idx = l_child_idx
+    else
+      swap_idx =
+        prc.call(children[0], children[1]) <= 0 ? l_child_idx : r_child_idx
+    end
+    arr[parent_idx], arr[swap_idx] = arr[swap_idx], arr[parent_idx]
+    heapify_down(arr, swap_idx, len, &prc)
+
+    arr
   end
 
   def self.heapify_up(arr, child_idx, len = arr.length, &prc)
